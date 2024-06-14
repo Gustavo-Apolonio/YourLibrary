@@ -4,7 +4,8 @@
   "scripts": {
     "start": "concurrently \"npm run start --prefix backend\" \"npm run start --prefix frontend\"",
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\"",
-    "build": "npm run build --prefix backend && npm run build --prefix frontend"
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "install:app": "echo INSTALLING BACKEND && cd ./backend && npm i && npm i --D && echo INSTALLING FRONTEND && cd ../frontend && npm i && npm i --D && echo INSTALLING APP && cd .. && npm i"
   },
   "dependencies": {
     "concurrently": "^8.2.2"

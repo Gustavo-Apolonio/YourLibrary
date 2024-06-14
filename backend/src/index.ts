@@ -3,7 +3,7 @@ import express from 'express';
 const app = express();
 const port = 5000;
 
-app.get('/api', (req, res) => {
+app.get('/api', (req: any, res: any) => {
   res.send('Chat GPT é MUITA vida!');
 });
 
