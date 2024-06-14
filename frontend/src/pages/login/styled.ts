@@ -65,13 +65,12 @@ const CardLogin = styled.div`
     &-description {
       font-size: 16px;
       font-weight: 800;
-      color: #15ABFF;
+      color: #0d6efd;
       margin-bottom: 24px;
     }
   }
   
   & button {
-    background-color: #15ABFF;
     color: #fff;
     border-radius: 4px;
     width: 100%;
