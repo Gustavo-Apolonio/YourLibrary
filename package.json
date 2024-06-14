@@ -2,17 +2,11 @@
   "name": "your-library",
   "version": "1.0.0",
   "scripts": {
+    "install:app": "bash install.sh",
+    "build": "bash build.sh",
+    "install-build": "bash install.sh build",
     "start": "concurrently \"npm run start --prefix backend\"",
-    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\"",
-    "build": "npm run build --prefix backend && npm run build --prefix frontend && npm run delete-current-build",
-    "build-win": "npm run build --prefix backend && npm run build --prefix frontend && npm run delete-current-build-win",
-    "delete-current-build": "rm -rf \"./backend/src/frontend/build\" && npm run move-build",
-    "delete-current-build-win": "rd /s /q \"./backend/src/frontend/build\" && npm run move-build-win",
-    "move-build": "cp -r \"./frontend/build\" \"./backend/src/frontend/build\"",
-    "move-build-win": "xcopy \"./frontend/build\" \"./backend/src/frontend/build\" /E /I",
-    "install:app": "echo INSTALLING BACKEND && cd ./backend && npm i && npm i --D && echo INSTALLING FRONTEND && cd ../frontend && npm i && npm i --D && echo INSTALLING APP && cd .. && npm i",
-    "all": "npm run install:app && npm run build",
-    "all-win": "npm run install:app && npm run build-win"
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\""
   },
   "dependencies": {
     "concurrently": "^8.2.2"
