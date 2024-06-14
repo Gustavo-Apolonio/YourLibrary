@@ -1,15 +1,20 @@
 import styled from "styled-components";
 
 const Container = styled.div`
-  width: calc(100% - (16px * 2));
-  height: calc(100vh - (16px * 2));
+  width: 100%;
+  height: 100vh;
   
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 16px;
 `;
 
-export { Container };
+const HeaderContainer = styled.div``;
+
+const BodyContainer = styled.div`
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+`;
+
+export { Container, HeaderContainer, BodyContainer };
