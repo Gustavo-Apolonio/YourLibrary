@@ -5,7 +5,7 @@
     "install:app": "bash install.sh",
     "build": "bash build.sh",
     "install-build": "bash install.sh build",
-    "start": "concurrently \"npm run start --prefix backend\"",
+    "start": "npm run start --prefix backend",
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\""
   },
   "dependencies": {

@@ -31,4 +31,4 @@ echo "Moving frontend build files..."
 cp -r "./frontend/build" "./backend/src/frontend"
 check_command_status
 
-echo "Build and installation completed successfully."
+echo "Build completed successfully."
