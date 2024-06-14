@@ -8,7 +8,7 @@
     "start": "npm run start --prefix backend",
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run start --prefix frontend\""
   },
-  "dependencies": {
+  "devDependencies": {
     "concurrently": "^8.2.2"
   }
 }
