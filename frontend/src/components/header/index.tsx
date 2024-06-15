@@ -1,6 +1,8 @@
 import React from 'react'
 import { ActionContainer, Container, SearchContainer } from './styled';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../store/hooks';
+import { User } from '../../store/state';
 
 const SearchIcon: React.FC = () => {
   return (
@@ -44,7 +46,10 @@ interface HeaderProps {
 const HeaderComponent: React.FC<HeaderProps> = ({ page }) => {
   const navigate = useNavigate();
 
+  const dispatch = useAppDispatch();
+
   const logout = () => {
+    dispatch(User.Slices.actions.clearUser());
     navigate('/');
   }
 

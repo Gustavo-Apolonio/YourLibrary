@@ -21,5 +21,9 @@ export const UserDatabase = {
     console.log('user deleted');
 
     return user;
+  },
+
+  getUserByEmailAndPassword: (email: string, password: string): any => {
+    return { username: 'Teste', email, password, id: '123' };
   }
 }

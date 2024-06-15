@@ -1,21 +1,51 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CardContainer, CardLogin, Container, TitleContainer, Footer, FooterContainer } from './styled';
 import { useNavigate } from 'react-router-dom';
+import { ToastifyUtils } from '../../utils';
+import { useUserLoginMutation } from '../../services/apis';
+import { Interfaces } from '../../models';
+import { useAppDispatch } from '../../store/hooks';
+import { User } from '../../store/state';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+
+  const [login, {
+    isSuccess,
+    data,
+    isError,
+  }] = useUserLoginMutation();
 
   const [continueButton, setContinueButton] = useState<boolean>(true);
   const [email, setEmail] = useState<string | null>(null);
   const [password, setPassword] = useState<string | null>(null);
 
   const confirmLogin = () => {
-    navigate('/yourlibrary');
+    if (!email) return ToastifyUtils.error('Insira um e-mail, por favor...');
+    if (!password) return ToastifyUtils.error('Insira uma senha, por favor...');
+
+    const payload: Interfaces.ILogin = { email, password };
+
+    login(payload);
   }
 
   const createUser = () => {
     navigate('/user')
   }
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      dispatch(User.Slices.actions.setUser({ ...data }))
+      navigate('/yourlibrary');
+    }
+
+    if (isError) {
+      ToastifyUtils.error('Não foi possível realizar o login...');
+      ToastifyUtils.error('E-mail ou senha inválidos...');
+    }
+  }, [isError, isSuccess, data, navigate, dispatch]);
 
   return (
     <Container>

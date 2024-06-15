@@ -10,14 +10,14 @@ export const userApi = createApi({
   baseQuery: BaseQueryWithRetryExceptions(baseUrl),
   tagTypes: [],
   endpoints: (builder) => ({
-    postUser: builder.mutation<Responses.IPostUser, Requests.IPostUser>({
+    postUser: builder.mutation<Responses.IResponseUser, Requests.IRequestUser>({
       query: (userPayload) => ({
         url: '/',
         method: 'POST',
         body: userPayload,
       }),
     }),
-    putUser: builder.mutation<Responses.IPostUser, Requests.IPostUser>({
+    putUser: builder.mutation<Responses.IResponseUser, Requests.IRequestUser>({
       query: (userPayload) => ({
         url: '/',
         method: 'PUT',
@@ -34,7 +34,7 @@ export const userApi = createApi({
 });
 
 export const {
-  endpoints,
+  endpoints: userApiEndpoints,
   usePostUserMutation,
   usePutUserMutation,
   useDeleteUserMutation,

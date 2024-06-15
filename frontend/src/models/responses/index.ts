@@ -1,1 +1,1 @@
-export * from './PostUser';
+export * from './ResponseUser';

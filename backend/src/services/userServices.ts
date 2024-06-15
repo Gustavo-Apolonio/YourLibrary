@@ -31,5 +31,9 @@ export const UserService = {
 
   deleteUser: (user: any): any => {
     return UserDatabase.deleteUser(user);
+  },
+
+  getUserByEmailAndPassword: (email: string, password: string): any => {
+    return UserDatabase.getUserByEmailAndPassword(email, password);
   }
 }
