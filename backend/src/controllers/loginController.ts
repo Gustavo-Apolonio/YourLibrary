@@ -15,7 +15,7 @@ const Routes = {
         try {
           const { email, password }: { email: string, password: string } = req.body;
 
-          const user = UserService.getUserByEmailAndPassword(email, password);
+          const user = await UserService.getUserByEmailAndPassword(email, password);
 
           if (!user)
             return res.status(ErrorStatus.NotFound).send(ErrorService.NotFound('Usuário não encontrado...'));

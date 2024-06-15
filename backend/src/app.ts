@@ -17,8 +17,13 @@ export const App = {
   configureStaticFront: (): void => {
     const frontBuildPath = path.join(__dirname, 'frontend', 'build');
     _app.use(express.static(frontBuildPath))
-    _app.get('/front', (_req, res) => {
-      res.sendFile(path.join(frontBuildPath, 'index.html'));
+    _app.get('*', (_req, res) => {
+      res.sendFile(path.join(frontBuildPath, 'index.html'), (err) => {
+        if (err) {
+          console.error('Error sending index.html:', err);
+          res.status(500).send(err);
+        }
+      });
     });
   },
 
@@ -27,8 +32,8 @@ export const App = {
   },
 
   configureApp: (): void => {
-    App.configureRoutes();
     App.configureStaticFront();
+    App.configureRoutes();
   },
 
   startApp: (): void => {
