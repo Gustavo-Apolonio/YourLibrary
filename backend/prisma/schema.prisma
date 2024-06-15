@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = "sqlserver://VM-IP_ADDRESS:1433;database=srv01;trustedConnection=true;"
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  nome  String
+  email String @unique
+  senha String
+
+  libraries Library[]
+}
+
+model Book {
+  id     Int    @id @default(autoincrement())
+  nome   String
+  autor  String
+  genero String
+
+  libraries Library[]
+}
+
+model Library {
+  id        Int @id @default(autoincrement())
+  idUsuario Int
+  idLivro   Int
+
+  usuario User @relation(fields: [idUsuario], references: [id])
+  livro   Book @relation(fields: [idLivro], references: [id])
+
+  @@unique([idUsuario, idLivro])
+}
