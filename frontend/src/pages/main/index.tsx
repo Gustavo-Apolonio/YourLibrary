@@ -8,7 +8,7 @@ const MainPage: React.FC = () => {
   return (
     <Container>
       <HeaderContainer>
-        <HeaderComponent></HeaderComponent>
+        <HeaderComponent page={'main'}></HeaderComponent>
       </HeaderContainer>
       <BodyContainer>
         <NavbarComponent></NavbarComponent>
