@@ -10,8 +10,11 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState<string | null>(null);
 
   const confirmLogin = () => {
-    console.log(email, password);
     navigate('/yourlibrary');
+  }
+
+  const createUser = () => {
+    navigate('/user')
   }
 
   return (
@@ -74,7 +77,12 @@ const LoginPage: React.FC = () => {
         </CardLogin>
         <Footer>
           <p>Novo Librarier?</p>
-          <button className='btn btn-secondary'>Criar sua conta</button>
+          <button
+            className='btn btn-secondary'
+            onClick={() => createUser()}
+          >
+            Criar sua conta
+          </button>
         </Footer>
       </CardContainer>
       <FooterContainer></FooterContainer>

@@ -28,11 +28,31 @@ const UserIcon: React.FC = () => {
   )
 }
 
-const NavbarComponent: React.FC = () => {
+const LibraryIcon: React.FC = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-bookmarks" viewBox="0 0 16 16">
+      <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1z" />
+      <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1" />
+    </svg>
+  )
+}
+
+interface HeaderProps {
+  page: 'main' | 'user';
+}
+
+const HeaderComponent: React.FC<HeaderProps> = ({ page }) => {
   const navigate = useNavigate();
 
   const logout = () => {
     navigate('/');
+  }
+
+  const navigateAnother = () => {
+    if (page === 'main')
+      return navigate('/user/edit');
+
+    return navigate('/yourlibrary');
   }
 
   return (
@@ -41,15 +61,33 @@ const NavbarComponent: React.FC = () => {
         <span className="input-group-text" id="basic-addon1">
           <SearchIcon />
         </span>
-        <input type="text" className="form-control" placeholder="Pesquise na sua biblioteca" aria-label="Pesquise na sua biblioteca" aria-describedby="basic-addon1" />
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Pesquise na sua biblioteca"
+          aria-label="Pesquise na sua biblioteca"
+          aria-describedby="basic-addon1"
+          disabled={page === 'user'}
+        />
       </SearchContainer>
 
       <ActionContainer>
-        <button
-          className='btn btn-outline-secondary'
-        >
-          <UserIcon />
-        </button>
+        {page === 'main' && (
+          <button
+            className='btn btn-outline-secondary'
+            onClick={() => navigateAnother()}
+          >
+            <UserIcon />
+          </button>
+        )}
+        {page === 'user' && (
+          <button
+            className='btn btn-outline-secondary'
+            onClick={() => navigateAnother()}
+          >
+            <LibraryIcon />
+          </button>
+        )}
         <button
           className='btn btn-outline-secondary'
           onClick={() => logout()}
@@ -61,4 +99,4 @@ const NavbarComponent: React.FC = () => {
   )
 }
 
-export default NavbarComponent;
+export default HeaderComponent;
