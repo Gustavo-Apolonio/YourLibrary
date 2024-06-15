@@ -12,6 +12,7 @@ const HeaderContainer = styled.div``;
 
 const BodyContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
@@ -37,6 +38,8 @@ const CardUser = styled.div`
   border-width: 1.5px;
   border-color: #B5B5B5;
   border-style: solid;
+
+  margin-bottom: 16px;
 `;
 
 const FormTitle = styled.div`
@@ -76,8 +79,12 @@ const FormActions = styled.div`
     width: 100%;
   }
 
-  & .edit-btn, & .create-btn {
+  & .create-btn, & .delete-btn {
     width: 48% !important;
+  }
+  
+  & .edit-btn {
+    width: 32% !important;
   }
 `;
 

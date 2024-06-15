@@ -1,7 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BodyContainer, CardUser, Container, Divider, FormActions, FormContainer, FormInputGroup, FormTitle, HeaderContainer } from './styled';
 import HeaderComponent from '../../components/header';
 import { useNavigate } from 'react-router-dom';
+import { ToastifyUtils } from '../../utils';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { User } from '../../store/state';
+import { Interfaces } from '../../models';
+import { useDeleteUserMutation, usePostUserMutation, usePutUserMutation } from '../../services/apis';
 
 const UserIcon: React.FC = () => {
   return (
@@ -23,7 +28,7 @@ const MailIcon: React.FC = () => {
 const PasswordIcon: React.FC = () => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-incognito" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5" />
+      <path fillRule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205l-.014-.058-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5s-1.411-.136-2.025-.267c-.541-.115-1.093.2-1.239.735m.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a30 30 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274M3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5m-1.5.5q.001-.264.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085q.084.236.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5" />
     </svg>
   )
 }
@@ -42,29 +47,96 @@ interface UserPageProps {
 
 const UserPage: React.FC<UserPageProps> = ({ edit }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const [postUser, {
+    isLoading: loadingPostUser,
+    isSuccess: postUserSuccess,
+    data: postUserDataResponse,
+  }] = usePostUserMutation();
+
+  const [putUser, {
+    isLoading: loadingPutUser,
+    isSuccess: putUserSuccess,
+    data: putUserDataResponse,
+  }] = usePutUserMutation();
+
+  const [removeUser, {
+    isLoading: loadingDeleteUser,
+    isSuccess: deleteUserSuccess,
+  }] = useDeleteUserMutation();
+
+  const stateId = useAppSelector((state) => User.Selectors.getId({ user: state.userReducer }));
+  const stateUsername = useAppSelector((state) => User.Selectors.getUsername({ user: state.userReducer }));
+  const stateEmail = useAppSelector((state) => User.Selectors.getEmail({ user: state.userReducer }));
+  const statePassword = useAppSelector((state) => User.Selectors.getPassword({ user: state.userReducer }));
 
   const [enableEdit, setEnableEdit] = useState<boolean>(false);
-  const [username, setUsername] = useState<string | undefined>(undefined);
-  const [email, setEmail] = useState<string | undefined>(undefined);
-  const [password, setPassword] = useState<string | undefined>(undefined);
+  const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+
+  const [username, setUsername] = useState<string | undefined>(stateUsername);
+  const [email, setEmail] = useState<string | undefined>(stateEmail);
+  const [password, setPassword] = useState<string | undefined>(statePassword);
   const [passwordConfirm, setPasswordConfirm] = useState<string | undefined>(undefined);
-
-  const saveUser = (update: boolean = false) => {
-    console.log(username, email, password);
-
-    if (update)
-      return setEnableEdit(false);
-
-    navigate('/yourlibrary');
-  }
 
   const goBack = () => {
     navigate('/');
   }
 
-  const deleteUser = () => {
-    navigate('/');
+  const saveUser = (update: boolean = false) => {
+    if (!username) return ToastifyUtils.error('Por favor, insira um nome de usuário...');
+    if (!email) return ToastifyUtils.error('Por favor, insira um e-mail...');
+    if (!password) return ToastifyUtils.error('Por favor, insira uma senha...');
+
+    if (password !== passwordConfirm) return ToastifyUtils.error('As senhas não conferem, por favor insira novamente...');
+
+    const payload: Interfaces.IUser = {
+      username,
+      email,
+      password
+    };
+
+    if (update)
+      return putUser({ ...payload, id: stateId, });
+
+    return postUser(payload);
   }
+
+  const cancelEdit = () => {
+    setUsername(stateUsername);
+    setEmail(stateEmail);
+    setPassword(statePassword);
+    setPasswordConfirm(undefined);
+    setEnableEdit(false);
+  }
+
+  const confirmDeleteUser = () => {
+    if (stateId) return removeUser(stateId);
+
+    ToastifyUtils.error('Não foi possível identificar o usuário...')
+  }
+
+  useEffect(() => {
+    if (!loadingPostUser && postUserSuccess && postUserDataResponse) {
+      dispatch(User.Slices.actions.setUser({ ...postUserDataResponse }));
+      navigate('/yourlibrary');
+    }
+  }, [loadingPostUser, postUserSuccess, postUserDataResponse, dispatch, navigate]);
+
+  useEffect(() => {
+    if (!loadingPutUser && putUserSuccess && putUserDataResponse) {
+      dispatch(User.Slices.actions.setUser({ ...putUserDataResponse }));
+      setEnableEdit(false);
+      setPasswordConfirm(undefined);
+    }
+  }, [loadingPutUser, putUserSuccess, putUserDataResponse, dispatch]);
+
+  useEffect(() => {
+    if (!loadingDeleteUser && deleteUserSuccess) {
+      dispatch(User.Slices.actions.clearUser());
+      navigate('/');
+    }
+  }, [loadingDeleteUser, deleteUserSuccess, dispatch, navigate]);
 
   return (
     <Container>
@@ -92,7 +164,7 @@ const UserPage: React.FC<UserPageProps> = ({ edit }) => {
                 aria-label="Nome de Usuário"
                 aria-describedby="basic-addon1"
                 value={username}
-                disabled={edit && !enableEdit}
+                disabled={(edit && !enableEdit) || confirmDelete}
                 onChange={($event) => setUsername($event.target.value)}
               />
             </FormInputGroup>
@@ -107,7 +179,7 @@ const UserPage: React.FC<UserPageProps> = ({ edit }) => {
                 aria-label="E-mail"
                 aria-describedby="basic-addon1"
                 value={email}
-                disabled={edit && !enableEdit}
+                disabled={(edit && !enableEdit) || confirmDelete}
                 onChange={($event) => setEmail($event.target.value)}
               />
             </FormInputGroup>
@@ -122,7 +194,7 @@ const UserPage: React.FC<UserPageProps> = ({ edit }) => {
                 aria-label="Senha"
                 aria-describedby="basic-addon1"
                 value={password}
-                disabled={edit && !enableEdit}
+                disabled={(edit && !enableEdit) || confirmDelete}
                 onChange={($event) => setPassword($event.target.value)}
               />
             </FormInputGroup>
@@ -138,19 +210,19 @@ const UserPage: React.FC<UserPageProps> = ({ edit }) => {
                   aria-label="Confirme a senha"
                   aria-describedby="basic-addon1"
                   value={passwordConfirm}
-                  disabled={edit && !enableEdit}
+                  disabled={(edit && !enableEdit) || confirmDelete}
                   onChange={($event) => setPasswordConfirm($event.target.value)}
                 />
               </FormInputGroup>
             )}
           </FormContainer>
-          <Divider></Divider>
-          {(edit && !enableEdit) && (
+          {!confirmDelete && (<Divider></Divider>)}
+          {(edit && !enableEdit && !confirmDelete) && (
             <FormActions>
               <button className='btn btn-outline-secondary' onClick={() => setEnableEdit(true)}>Editar cadastro</button>
             </FormActions>
           )}
-          {(edit && enableEdit) && (
+          {(edit && enableEdit && !confirmDelete) && (
             <FormActions>
               <button
                 className='edit-btn btn btn-success'
@@ -159,23 +231,31 @@ const UserPage: React.FC<UserPageProps> = ({ edit }) => {
                 Salvar cadastro
               </button>
               <button
+                className='edit-btn btn btn-outline-warning'
+                onClick={() => cancelEdit()}
+              >
+                Cancelar
+              </button>
+              <button
                 className='edit-btn btn btn-outline-danger'
-                onClick={() => deleteUser()}
+                onClick={() => setConfirmDelete(true)}
               >
                 Deletar cadastro
               </button>
             </FormActions>
           )}
-          {!edit && (
+          {(!edit && !confirmDelete) && (
             <FormActions>
               <button
                 className='create-btn btn btn-outline-secondary'
+                disabled={loadingPostUser}
                 onClick={() => goBack()}
               >
                 Voltar
               </button>
               <button
                 className='create-btn btn btn-outline-primary'
+                disabled={loadingPostUser}
                 onClick={() => saveUser()}
               >
                 Cadastrar
@@ -183,6 +263,27 @@ const UserPage: React.FC<UserPageProps> = ({ edit }) => {
             </FormActions>
           )}
         </CardUser>
+        {confirmDelete && (
+          <CardUser>
+            <FormTitle>
+              <p>Tem certeza que deseja deletar seu cadastro?</p>
+            </FormTitle>
+            <FormActions>
+              <button
+                className='delete-btn btn btn-outline-success'
+                onClick={() => setConfirmDelete(false)}
+              >
+                Não, não desejo deletar meu cadastro
+              </button>
+              <button
+                className='delete-btn btn btn-danger'
+                onClick={() => confirmDeleteUser()}
+              >
+                Sim, tenho certeza!
+              </button>
+            </FormActions>
+          </CardUser>
+        )}
       </BodyContainer>
     </Container>
   )

@@ -45,6 +45,10 @@ const globalStyle = createGlobalStyle`
   *::-webkit-scrollbar-thumb {
     background-color: #f0f0f0;
   }
+
+  .app-toastify div div {
+    font-weight: 400;
+  }
 `;
 
 export default globalStyle;
