@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
-  url      = "sqlserver://VM-IP_ADDRESS:1433;database=srv01;trustedConnection=true;"
+  url      = "sqlserver://yourlibrary:123456@localhost:1433;database=srv01;encrypt=false;"
 }
 
 model User {

@@ -11,15 +11,19 @@ const Routes = {
   create: () => {
     _router.post(
       '/',
-      (req: Request, res: Response): Response => {
-        const { username, email, password }: { username: string, email: string, password: string } = req.body;
+      async (req: Request, res: Response): Promise<Response> => {
+        try {
+          const { username, email, password }: { username: string, email: string, password: string } = req.body;
 
-        const user = UserService.createUser(username, email, password);
+          const user = await UserService.createUser(username, email, password);
 
-        if (!user)
-          return res.status(ErrorStatus.BadRequest).send(ErrorService.BadRequest('Usuário não pode ser criado...'));
+          if (!user)
+            return res.status(ErrorStatus.BadRequest).send(ErrorService.BadRequest('Usuário não pode ser criado...'));
 
-        return res.status(SuccessStatus.OK).send(user);
+          return res.status(SuccessStatus.OK).send(user);
+        } catch (error) {
+          return res.status(ErrorStatus.Internal).send(ErrorService.Internal(error as unknown as string))
+        }
       }
     )
   },
@@ -27,20 +31,24 @@ const Routes = {
   update: () => {
     _router.put(
       '/',
-      (req: Request, res: Response): Response => {
-        const { id, username, email, password }: { id: number, username: string, email: string, password: string } = req.body;
+      async (req: Request, res: Response): Promise<Response> => {
+        try {
+          const { id, username, email, password }: { id: number, username: string, email: string, password: string } = req.body;
 
-        let user = UserService.getUserById(id);
+          let user = await UserService.getUserById(id);
 
-        if (!user)
-          return res.status(ErrorStatus.NotFound).send(ErrorService.NotFound('Usuário não encontrado...'));
+          if (!user)
+            return res.status(ErrorStatus.NotFound).send(ErrorService.NotFound('Usuário não encontrado...'));
 
-        user = UserService.updateUser(user, username, email, password);
+          user = await UserService.updateUser(user, username, email, password);
 
-        if (!user)
-          return res.status(ErrorStatus.BadRequest).send(ErrorService.BadRequest('Usuário não pode ser atualizado...'));
+          if (!user)
+            return res.status(ErrorStatus.BadRequest).send(ErrorService.BadRequest('Usuário não pode ser atualizado...'));
 
-        return res.status(SuccessStatus.OK).send(user);
+          return res.status(SuccessStatus.OK).send(user);
+        } catch (error) {
+          return res.status(ErrorStatus.Internal).send(ErrorService.Internal(error as unknown as string))
+        }
       }
     )
   },
@@ -48,20 +56,24 @@ const Routes = {
   delete: () => {
     _router.delete(
       '/:id',
-      (req: Request, res: Response): Response => {
-        const id = +req.params.id;
+      async (req: Request, res: Response): Promise<Response> => {
+        try {
+          const id = +req.params.id;
 
-        const user = UserService.getUserById(id);
+          const user = await UserService.getUserById(id);
 
-        if (!user)
-          return res.status(ErrorStatus.NotFound).send(ErrorService.NotFound('Usuário não encontrado...'));
+          if (!user)
+            return res.status(ErrorStatus.NotFound).send(ErrorService.NotFound('Usuário não encontrado...'));
 
-        const deleted = UserService.deleteUser(user);
+          const deleted = UserService.deleteUser(user.id);
 
-        if (!deleted)
-          return res.status(ErrorStatus.Internal).send(ErrorService.Internal('Usuário não foi possível deletar o usuário...'));
+          if (!deleted)
+            return res.status(ErrorStatus.Internal).send(ErrorService.Internal('Usuário não foi possível deletar o usuário...'));
 
-        return res.status(SuccessStatus.OkNoContent).end();
+          return res.status(SuccessStatus.OkNoContent).end();
+        } catch (error) {
+          return res.status(ErrorStatus.Internal).send(ErrorService.Internal(error as unknown as string))
+        }
       }
     )
   },

@@ -1,39 +1,40 @@
 import { UserDatabase } from "../databases";
+import { IUser } from "../models";
 
 export const UserService = {
-  createUser: (username: string, email: string, password: string): any => {
-    if (!username || !email || !password) return;
+  createUser: async (username: string, email: string, password: string): Promise<IUser> => {
+    if (!username || !email || !password) throw new Error('Campos obrigatórios não preenchidos...');
 
-    const userCreated = UserDatabase.createUser(username, email, password);
+    const userCreated = await UserDatabase.createUser(username, email, password);
 
     return userCreated;
   },
 
-  getUserById: (id: number): any => {
-    if (!id || isNaN(id)) return;
+  getUserById: async (id: number): Promise<IUser> => {
+    if (!id || isNaN(id)) throw new Error('ID não reconhecido...');;
 
-    const user = UserDatabase.getUserById(id);
+    const user = await UserDatabase.getUserById(id);
 
     return user;
   },
 
-  updateUser: (user: any, username: string, email: string, password: string): any => {
-    if (!username || !email || !password) return;
+  updateUser: async (user: any, username: string, email: string, password: string): Promise<IUser> => {
+    if (!username || !email || !password) throw new Error('Campos obrigatórios não preenchidos...');;
 
     user.username = username;
     user.email = email;
     user.password = password;
 
-    user = UserDatabase.updateUser(user);
+    user = await UserDatabase.updateUser(user);
 
     return user;
   },
 
-  deleteUser: (user: any): any => {
-    return UserDatabase.deleteUser(user);
+  deleteUser: async (userId: number): Promise<IUser> => {
+    return await UserDatabase.deleteUser(userId);
   },
 
-  getUserByEmailAndPassword: (email: string, password: string): any => {
-    return UserDatabase.getUserByEmailAndPassword(email, password);
+  getUserByEmailAndPassword: async (email: string, password: string): Promise<IUser> => {
+    return await UserDatabase.getUserByEmailAndPassword(email, password);
   }
 }
